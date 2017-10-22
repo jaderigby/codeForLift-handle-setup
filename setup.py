@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import os, subprocess, re, sys
 
 def main():
@@ -513,12 +515,63 @@ PS1='${debian_chroot:+($debian_chroot)}\u@%s:\w\$ '
 }''')
         FILE.close()
 
+    def handle_executable():
+        # Reference: https://stackoverflow.com/questions/15587877/run-a-python-script-in-terminal-without-the-python-command
+        print("-- Making setup file executable --")
+        base = os.path.expanduser('~')
+        alias = '''
+export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
+'''
+        FILE = open(base + '/.bashrc', 'r')
+        data = FILE.read()
+        FILE.close()
+        pat = re.escape(alias)
+        match = re.search(pat, data)
+        if match:
+            print("")
+            print("\t- path variable already set!")
+        else:
+            print("\t- path variable for executable is set")
+            FILE = open(base + '/.bashrc', 'w')
+            data += alias
+            FILE.write(data)
+            FILE.close()
+        # check if file is already executable
+        p = subprocess.Popen(['ls', '-l'], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        selection = None
+
+        def find_setup_file(ELEM):
+            print("ELEM: " + ELEM)
+            result = re.search('setup\.py', ELEM).group()
+            print("result: " + result)
+            return True
+
+        for line in out.split('\n'):
+            if 'setup.py' in line:
+                if '-x' in line:
+                    executable = True
+                else:
+                    executable = False
+
+        if executable:
+            print("\t- permissions for setup file already set!")
+        else:
+            subprocess.call(['chmod', '+x', 'setup.py'])
+            print("\t- permissions for setup file set")
+        print("")
+        print(divider)
+
     #=== Execute ===
     if action == None:
         print("You need to pass in an argument, such as '-a' for 'all'.")
         print('''
 [ -a ]                  Run all processes
-[ --atom-dep ]          atom dependencies, including atom-runner
+[ --tmux ]              Setup tmux, or "tm", alias reference
+[ --personalize ]       personalizes the terminal
+[ --atom-dep ]          atom dependencies = platformio-ide-terminal, atom-runner, atom-pair
+[ --quizes ]            adds the quizes repo and alias reference
+[ --exec ]              make script executable from command line by simply typing file name
 ''')
     else:
         for param in sys.argv:
@@ -539,10 +592,18 @@ PS1='${debian_chroot:+($debian_chroot)}\u@%s:\w\$ '
                 add_tm_alias()
                 configure_caps_lock()
                 add_name()
+                handle_atom_dependencies()
+                handle_quizes()
+            elif param == '--tmux':
+                add_tm_alias()
+            elif param == '--personalize':
+                add_name()
             elif param == '--atom-dep':
                 handle_atom_dependencies()
             elif param == '--quizes':
                 handle_quizes()
+            elif param == '--exec':
+                handle_executable()
         print(divider)
         print("")
 
