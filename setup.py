@@ -515,6 +515,28 @@ PS1='${debian_chroot:+($debian_chroot)}\u@%s:\w\$ '
 }''')
         FILE.close()
 
+    def handle_assignments():
+        base = os.path.expanduser('~')
+        subprocess.call(['git', 'clone', 'https://github.com/jaderigby/codeForLift-quizes.git'], cwd=base+'/Documents')
+        FILE = open(base + '/.bashrc', 'r')
+        data = FILE.read()
+        FILE.close()
+        FILE = open(base + '/.bashrc', 'w')
+        FILE.write(data + '\nalias quiz="python ~/Documents/codeForLift-quizes/actions.py"')
+        FILE.close()
+        subprocess.call(['mkdir', 'profiles'], cwd=base+'/Documents/codeForLift-quizes/')
+        FILE = open(base + '/Documents/codeForLift-quizes/profiles/profile.py', 'w')
+        FILE.write('''{
+    "settings" : {
+        "name" : "",
+        "codeForLift" : {
+            "quizes" : [],
+            "assignments" : []
+        }
+    }
+}''')
+        FILE.close()
+
     def handle_executable():
         # Reference: https://stackoverflow.com/questions/15587877/run-a-python-script-in-terminal-without-the-python-command
         print("-- Making setup file executable --")
@@ -604,6 +626,8 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
                 handle_quizes()
             elif param == '--exec':
                 handle_executable()
+            elif param == '--assignments':
+                handle_assignments()
         print(divider)
         print("")
 
