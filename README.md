@@ -2,7 +2,7 @@
 
 ## Setting Up Quizes ##
 
-- Go to "github.com/jaderigby" and clone "codeForLift-handle-setup" in the Documents folder
+- Clone the "codeForLift-handle-setup" repo into your Documents folder
 
 - Once you have done this, run the following command:
 
@@ -16,7 +16,7 @@
 
   `setup.py --quizes`
 
-  This does the following:
+  What this does:
   - installs the quizes repo
   - creates the necessary "profile.py" file
   - adds the quizes alias to the ".bashrc" file
