@@ -138,7 +138,8 @@ CONFIGURE TASKBAR
         print("")
 
     def handle_deb_installs():
-        base = os.path.expanduser('~')
+        base = os.path.dirname(__file__)
+	print("Base is: " + base)
         items = [
             {
                 "name" : "Chrome",
@@ -616,6 +617,9 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
                 add_name()
                 handle_atom_dependencies()
                 handle_quizes()
+	    elif param == '--install':
+		handle_deb_installs()
+		handle_apt_get_Installs()
             elif param == '--tmux':
                 add_tm_alias()
             elif param == '--personalize':
