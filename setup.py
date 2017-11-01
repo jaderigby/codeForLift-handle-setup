@@ -40,7 +40,7 @@ def main():
             }
             , {
                 "name" : "Jade Ambience Desktop",
-                "id" : "0B0TzE5qCAZXSdGw3MjNvLVNEQXc",
+                "id" : "0B0TzE5qCAZXSOTR0RENSb042R0k",
                 "filename" : "jade-ambience.jpg"
             }
             , {
@@ -122,7 +122,10 @@ CONFIGURE WINDOWS
             , '/panels/panel-1/autohide-behavior'
             , '-s'
             , '2'
+	    , '--create'
         ])
+	
+	#= Troubleshooting: run command `xfconf-query` to see a list of properties available to you.  To view panels available to you, run `xfconf-query -c xfce4-panel -p /panels`; to view properties of panel: `xfconf-query -c xfce4-panel -p /panels/panel-1 -lv'; to set autohide: `xfconf-query -c xfce4-panel -p /panels/panel-1/autohide -s true`
 
         raw_input('''
 CONFIGURE TASKBAR
@@ -130,7 +133,7 @@ CONFIGURE TASKBAR
 1) right click and select "Panel > Panel Preferences"
 2) under "Items" tab, select and remove "Window Buttons"
 3) close the Panel Preferences window
-4) right click each pinned shortcut icon -- next to the gallium start button -- and select "remove"
+4) right click each pinned shortcut icon -- excluding the gallium start button -- and select "remove"
 
 ... Press "enter" to continue:''')
         print("")
@@ -216,6 +219,7 @@ CONFIGURE TASKBAR
             print("\t- {}\n".format(item))
         for item in items:
             subprocess.call(['sudo', 'scp', base + 'Downloads/' + item, '/usr/share/backgrounds/xfce'])
+	    subprocess.call(['rm', base + 'Downloads/' + item])
 
     def set_desktop_wallpaper(IMG):
         print("")
@@ -256,23 +260,24 @@ CONFIGURE TASKBAR
         print("-- Adding custom Albert theme: jade-theme --")
         print("")
         print(divider)
-        base = os.path.expanduser('~') + '/'
-        directory = base + '.local/share/albert/themes'
+        base = os.path.expanduser('~')
+        directory = base + '/.local/share/albert/themes'
         fileName = 'jade-theme.qss'
         filePath = directory + '/' + fileName
 
         if not os.path.exists(directory):
             os.makedirs(directory)
-
-        subprocess.call(['scp', base + 'Downloads/' + fileName, directory])
+	
+        subprocess.call(['scp', base + '/Downloads/' + fileName, directory])
+	subprocess.call(['rm', base + '/Downloads/' + fileName])
 
         raw_input('''
 ASSIGN SHORTCUT KEY TO ALBERT
 
 1) Launch Albert
-2) open Albert Settings (top-right: gear icon)
+2) The first time, you will be prompted to "Open Albert Settings" -- click "Yes". Otherwise, open Albert Settings (top-right: gear icon)
 3) select "Hotkeys"
-4) gesture shortcut keys to assign
+4) gesture shortcut keys to assign (Suggestion:  ctrl + spacebar)
 
 ... Press "enter" to continue: ''')
         print("")
@@ -309,6 +314,7 @@ CHANGE ALBERT THEME
         print("")
         base = os.path.expanduser('~')
         subprocess.call(['scp', base + '/Downloads/albert-to-searchkey.sh', base])
+	subprocess.call(['rm', base + '/Downloads/albert-to-searchkey.sh'])
 
     def configure_docky():
         print(divider)
@@ -590,6 +596,14 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
         print("You need to pass in an argument, such as '-a' for 'all'.")
         print('''
 [ -a ]                  Run all processes
+[ --install ]		Install deb packages and apt-get installs
+[ --assets ] 		Download all resources
+[ --theme ] 		Assign new gallium theme
+[ --taskbar ]		Configure taskbar to spec (reduce height, set autohide)
+[ --wallpaper ]		Move wallpapers to shared folder; set desktop wallpaper
+[ --albert-config ]     Configure Albert
+[ --caps-lock ] 	Configure caps-lock
+[ --name ] 		Customize command line to include personalized name
 [ --tmux ]              Setup tmux, or "tm", alias reference
 [ --personalize ]       personalizes the terminal
 [ --atom-dep ]          atom dependencies = platformio-ide-terminal, atom-runner, atom-pair
@@ -620,6 +634,22 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
 	    elif param == '--install':
 		handle_deb_installs()
 		handle_apt_get_Installs()
+	    elif param == '--assets':
+		download_resources()
+	    elif param == '--theme':
+		handle_gallium_theme()
+	    elif param == '--taskbar':
+		handle_taskbar()
+	    elif param == '--wallpaper':
+		handle_desktop_wallpapers()
+		set_desktop_wallpaper('jade-ambience.jpg')
+	    elif param == '--albert-config':
+		handle_albert_configuration()
+		handle_albert_to_searchkey()
+	    elif param == '--caps-lock':
+		configure_caps_lock()
+	    elif param == '--name':
+		add_name()
             elif param == '--tmux':
                 add_tm_alias()
             elif param == '--personalize':
