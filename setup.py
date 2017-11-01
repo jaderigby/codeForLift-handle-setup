@@ -124,7 +124,7 @@ CONFIGURE WINDOWS
             , '2'
 	    , '--create'
         ])
-	
+
 	#= Troubleshooting: run command `xfconf-query` to see a list of properties available to you.  To view panels available to you, run `xfconf-query -c xfce4-panel -p /panels`; to view properties of panel: `xfconf-query -c xfce4-panel -p /panels/panel-1 -lv'; to set autohide: `xfconf-query -c xfce4-panel -p /panels/panel-1/autohide -s true`
 
         raw_input('''
@@ -267,7 +267,7 @@ CONFIGURE TASKBAR
 
         if not os.path.exists(directory):
             os.makedirs(directory)
-	
+
         subprocess.call(['scp', base + '/Downloads/' + fileName, directory])
 	subprocess.call(['rm', base + '/Downloads/' + fileName])
 
@@ -342,7 +342,7 @@ DOCKY CONFIGURATION
         print("")
         print("-- Creating Autostart Sessions: --")
         print("")
-        base = base = os.path.expanduser('~')
+        base = os.path.expanduser('~')
         path = base + '/.config/autostart/'
         items = [
             {
@@ -392,6 +392,11 @@ Categories=Utility;
 '''
             }
         ]
+
+        if not os.path.exists(path):
+            subprocess.call(['mkdir', path])
+        else:
+            print("\t- directory 'autostart' already exists!")
 
         for item in items:
             if not os.path.exists(path + item['fileName']):
@@ -596,14 +601,15 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
         print("You need to pass in an argument, such as '-a' for 'all'.")
         print('''
 [ -a ]                  Run all processes
-[ --install ]		Install deb packages and apt-get installs
-[ --assets ] 		Download all resources
-[ --theme ] 		Assign new gallium theme
-[ --taskbar ]		Configure taskbar to spec (reduce height, set autohide)
-[ --wallpaper ]		Move wallpapers to shared folder; set desktop wallpaper
+[ --install ]           Install deb packages and apt-get installs
+[ --assets ]            Download all resources
+[ --theme ]             Assign new gallium theme
+[ --taskbar ]           Configure taskbar to spec (reduce height, set autohide)
+[ --wallpaper ]         Move wallpapers to shared folder; set desktop wallpaper
 [ --albert-config ]     Configure Albert
-[ --caps-lock ] 	Configure caps-lock
-[ --name ] 		Customize command line to include personalized name
+[ --caps-lock ]         Configure caps-lock
+[ --name ]              Customize command line to include personalized name
+[ --autostart ]         Setup autostart items
 [ --tmux ]              Setup tmux, or "tm", alias reference
 [ --personalize ]       personalizes the terminal
 [ --atom-dep ]          atom dependencies = platformio-ide-terminal, atom-runner, atom-pair
@@ -631,25 +637,27 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
                 add_name()
                 handle_atom_dependencies()
                 handle_quizes()
-	    elif param == '--install':
-		handle_deb_installs()
-		handle_apt_get_Installs()
-	    elif param == '--assets':
-		download_resources()
-	    elif param == '--theme':
-		handle_gallium_theme()
-	    elif param == '--taskbar':
-		handle_taskbar()
-	    elif param == '--wallpaper':
-		handle_desktop_wallpapers()
-		set_desktop_wallpaper('jade-ambience.jpg')
-	    elif param == '--albert-config':
-		handle_albert_configuration()
-		handle_albert_to_searchkey()
-	    elif param == '--caps-lock':
-		configure_caps_lock()
-	    elif param == '--name':
-		add_name()
+    	    elif param == '--install':
+        		handle_deb_installs()
+        		handle_apt_get_Installs()
+    	    elif param == '--assets':
+        		download_resources()
+    	    elif param == '--theme':
+        		handle_gallium_theme()
+    	    elif param == '--taskbar':
+        		handle_taskbar()
+    	    elif param == '--wallpaper':
+        		handle_desktop_wallpapers()
+        		set_desktop_wallpaper('jade-ambience.jpg')
+    	    elif param == '--albert-config':
+        		handle_albert_configuration()
+        		handle_albert_to_searchkey()
+    	    elif param == '--caps-lock':
+        		configure_caps_lock()
+    	    elif param == '--name':
+        		add_name()
+            elif param == '--autostart':
+                handle_autostart()
             elif param == '--tmux':
                 add_tm_alias()
             elif param == '--personalize':
