@@ -635,6 +635,44 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
         print(divider)
         print("")
 
+'''
+=============================================================
+
+-- Setting panel height to: 25px --
+
+-- Turning panel autohide to: ON --
+
+=============================================================
+Property "/panels/panel-1/autohide-behavior" does not exist on channel "xfce4-panel". If a new property should be created, use the --create option.
+
+
+open albert confirm "first time" message and "set hotkey" message
+
+- right click albert icon in bottom menu
+- restart albert
+
+
+- wasn't able to set albert theme
+- atom didn't install
+- chrome didn't install
+
+
+Traceback (most recent call last):
+  File "/home/chrx/Documents/codeForLift-handle-setup/setup.py", line 636, in <module>
+    main()
+  File "/home/chrx/Documents/codeForLift-handle-setup/setup.py", line 617, in main
+    handle_atom_dependencies()
+  File "/home/chrx/Documents/codeForLift-handle-setup/setup.py", line 197, in handle_atom_dependencies
+    subprocess.call(['apm', 'install', 'platformio-ide-terminal'])
+  File "/usr/lib/python2.7/subprocess.py", line 523, in call
+    return Popen(*popenargs, **kwargs).wait()
+  File "/usr/lib/python2.7/subprocess.py", line 711, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1343, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+chrx@chrx:~/Documents/codeForLift-handle-setup$
+'''
 
 if __name__ == '__main__':
     main()
