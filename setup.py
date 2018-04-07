@@ -40,7 +40,7 @@ def main():
             }
             , {
                 "name" : "Jade Ambience Desktop",
-                "id" : "0B0TzE5qCAZXSdGw3MjNvLVNEQXc",
+                "id" : "0B0TzE5qCAZXSOTR0RENSb042R0k",
                 "filename" : "jade-ambience.jpg"
             }
             , {
@@ -122,7 +122,10 @@ CONFIGURE WINDOWS
             , '/panels/panel-1/autohide-behavior'
             , '-s'
             , '2'
+	    , '--create'
         ])
+
+	#= Troubleshooting: run command `xfconf-query` to see a list of properties available to you.  To view panels available to you, run `xfconf-query -c xfce4-panel -p /panels`; to view properties of panel: `xfconf-query -c xfce4-panel -p /panels/panel-1 -lv'; to set autohide: `xfconf-query -c xfce4-panel -p /panels/panel-1/autohide -s true`
 
         raw_input('''
 CONFIGURE TASKBAR
@@ -130,7 +133,7 @@ CONFIGURE TASKBAR
 1) right click and select "Panel > Panel Preferences"
 2) under "Items" tab, select and remove "Window Buttons"
 3) close the Panel Preferences window
-4) right click each pinned shortcut icon -- next to the gallium start button -- and select "remove"
+4) right click each pinned shortcut icon -- excluding the gallium start button -- and select "remove"
 
 ... Press "enter" to continue:''')
         print("")
@@ -138,7 +141,8 @@ CONFIGURE TASKBAR
         print("")
 
     def handle_deb_installs():
-        base = os.path.expanduser('~')
+        base = os.path.dirname(__file__)
+	print("Base is: " + base)
         items = [
             {
                 "name" : "Chrome",
@@ -215,6 +219,7 @@ CONFIGURE TASKBAR
             print("\t- {}\n".format(item))
         for item in items:
             subprocess.call(['sudo', 'scp', base + 'Downloads/' + item, '/usr/share/backgrounds/xfce'])
+	    subprocess.call(['rm', base + 'Downloads/' + item])
 
     def set_desktop_wallpaper(IMG):
         print("")
@@ -255,23 +260,24 @@ CONFIGURE TASKBAR
         print("-- Adding custom Albert theme: jade-theme --")
         print("")
         print(divider)
-        base = os.path.expanduser('~') + '/'
-        directory = base + '.local/share/albert/themes'
+        base = os.path.expanduser('~')
+        directory = base + '/.local/share/albert/themes'
         fileName = 'jade-theme.qss'
         filePath = directory + '/' + fileName
 
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        subprocess.call(['scp', base + 'Downloads/' + fileName, directory])
+        subprocess.call(['scp', base + '/Downloads/' + fileName, directory])
+	subprocess.call(['rm', base + '/Downloads/' + fileName])
 
         raw_input('''
 ASSIGN SHORTCUT KEY TO ALBERT
 
 1) Launch Albert
-2) open Albert Settings (top-right: gear icon)
+2) The first time, you will be prompted to "Open Albert Settings" -- click "Yes". Otherwise, open Albert Settings (top-right: gear icon)
 3) select "Hotkeys"
-4) gesture shortcut keys to assign
+4) gesture shortcut keys to assign (Suggestion:  ctrl + spacebar)
 
 ... Press "enter" to continue: ''')
         print("")
@@ -308,6 +314,7 @@ CHANGE ALBERT THEME
         print("")
         base = os.path.expanduser('~')
         subprocess.call(['scp', base + '/Downloads/albert-to-searchkey.sh', base])
+	subprocess.call(['rm', base + '/Downloads/albert-to-searchkey.sh'])
 
     def configure_docky():
         print(divider)
@@ -335,7 +342,7 @@ DOCKY CONFIGURATION
         print("")
         print("-- Creating Autostart Sessions: --")
         print("")
-        base = base = os.path.expanduser('~')
+        base = os.path.expanduser('~')
         path = base + '/.config/autostart/'
         items = [
             {
@@ -385,6 +392,11 @@ Categories=Utility;
 '''
             }
         ]
+
+        if not os.path.exists(path):
+            subprocess.call(['mkdir', path])
+        else:
+            print("\t- directory 'autostart' already exists!")
 
         for item in items:
             if not os.path.exists(path + item['fileName']):
@@ -787,6 +799,15 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
         print("You need to pass in an argument, such as '-a' for 'all'.")
         print('''
 [ -a ]                  Run all processes
+[ --install ]           Install deb packages and apt-get installs
+[ --assets ]            Download all resources
+[ --theme ]             Assign new gallium theme
+[ --taskbar ]           Configure taskbar to spec (reduce height, set autohide)
+[ --wallpaper ]         Move wallpapers to shared folder; set desktop wallpaper
+[ --albert-config ]     Configure Albert
+[ --caps-lock ]         Configure caps-lock
+[ --name ]              Customize command line to include personalized name
+[ --autostart ]         Setup autostart items
 [ --tmux ]              Setup tmux, or "tm", alias reference
 [ --personalize ]       personalizes the terminal
 [ --atom-dep ]          atom dependencies = platformio-ide-terminal, atom-runner, atom-pair
@@ -815,6 +836,27 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
                 add_name()
                 handle_atom_dependencies()
                 handle_quizes()
+    	    elif param == '--install':
+        		handle_deb_installs()
+        		handle_apt_get_Installs()
+    	    elif param == '--assets':
+        		download_resources()
+    	    elif param == '--theme':
+        		handle_gallium_theme()
+    	    elif param == '--taskbar':
+        		handle_taskbar()
+    	    elif param == '--wallpaper':
+        		handle_desktop_wallpapers()
+        		set_desktop_wallpaper('jade-ambience.jpg')
+    	    elif param == '--albert-config':
+        		handle_albert_configuration()
+        		handle_albert_to_searchkey()
+    	    elif param == '--caps-lock':
+        		configure_caps_lock()
+    	    elif param == '--name':
+        		add_name()
+            elif param == '--autostart':
+                handle_autostart()
             elif param == '--tmux':
                 add_tm_alias()
             elif param == '--personalize':
@@ -832,6 +874,44 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
         print(divider)
         print("")
 
+'''
+=============================================================
+
+-- Setting panel height to: 25px --
+
+-- Turning panel autohide to: ON --
+
+=============================================================
+Property "/panels/panel-1/autohide-behavior" does not exist on channel "xfce4-panel". If a new property should be created, use the --create option.
+
+
+open albert confirm "first time" message and "set hotkey" message
+
+- right click albert icon in bottom menu
+- restart albert
+
+
+- wasn't able to set albert theme
+- atom didn't install
+- chrome didn't install
+
+
+Traceback (most recent call last):
+  File "/home/chrx/Documents/codeForLift-handle-setup/setup.py", line 636, in <module>
+    main()
+  File "/home/chrx/Documents/codeForLift-handle-setup/setup.py", line 617, in main
+    handle_atom_dependencies()
+  File "/home/chrx/Documents/codeForLift-handle-setup/setup.py", line 197, in handle_atom_dependencies
+    subprocess.call(['apm', 'install', 'platformio-ide-terminal'])
+  File "/usr/lib/python2.7/subprocess.py", line 523, in call
+    return Popen(*popenargs, **kwargs).wait()
+  File "/usr/lib/python2.7/subprocess.py", line 711, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1343, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+chrx@chrx:~/Documents/codeForLift-handle-setup$
+'''
 
 if __name__ == '__main__':
     main()
