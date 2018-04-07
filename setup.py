@@ -584,6 +584,204 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
         print("")
         print(divider)
 
+    def handle_markdown_html_snippet():
+        base = os.path.expanduser('~')
+        FILE = open(base + '/.atom/snippets.cson', 'r')
+        data = FILE.read()
+        FILE.close()
+        FILE = open(base + '/.atom/snippets.cson', 'w')
+        snip = ''''
+.text.html.basic':
+  'markdown-html blueprint':
+    'prefix': 'html-mark'
+    'body': """<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<!-- <link rel="stylesheet" type="text/css" href="your/filepath/here" /> -->
+		<!-- <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" /> -->
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+				font-size: 100%;
+			}
+			h1 {
+				font-size: 3.2rem;
+			}
+			h2 {
+				font-size: 2.8rem;
+			}
+			h3 {
+				font-size: 2.4rem;
+			}
+			h4 {
+				font-size: 2rem
+			}
+			h5 {
+				font-size: 1.6rem;
+			}
+			h6 {
+				font-size: 1.2rem;
+			}
+			body {
+				background-color: #444;
+			}
+			#container {
+				margin: 0 auto 30px;
+				padding: 0 30px 30px;
+				width: 960px;
+				min-height: 500px;
+				background-color: #fff;
+				border-radius: 0 0 8px 8px;
+				box-shadow: 0 0 35px rgba(0,0,0,0.5);
+				font-family: arial, verdana, sans-serif;
+			}
+			.centerize {
+				position: absolute;
+				margin: auto;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0
+			}
+			.cf:after {
+				content: " ";
+				display: table;
+				clear: both;
+			}
+			#container ul, #container ol {
+				margin-top: 25px;
+				margin-bottom: 25px;
+				margin-left: 25px;
+			}
+			p {
+				margin-top: 25px;
+				margin-bottom: 25px;
+			}
+			.title {
+				margin: 0 -30px 60px;
+				padding: 30px;
+				/* text-align: center; */
+				font-size: 3rem;
+				background-color: #b5d0c4;
+			}
+			.thirds > aside img, .fifths > aside img, .sevenths > aside img {
+				width: 100%;
+				height: auto;
+			}
+			.thirds {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				align-items: stretch;
+			}
+			.thirds > aside {
+				width: calc(33.5% - 12.5px);
+			}
+			.thirds > article {
+				width: calc(66.5% - 12.5px);
+			}
+			.thirds > aside + article {
+				margin-left: 25px;
+			}
+			.thirds > article + aside {
+				margin-right: 25px;
+			}
+			.thirds, .fifths, .sevenths {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				align-items: stretch;
+			}
+			.fifths > aside {
+				width: calc(40% - 12.5px);
+			}
+			.fifths > article {
+				width: calc(60% - 12.5px);
+			}
+			.fifths > aside + article {
+				margin-left: 25px;
+			}
+			.fifths > article + aside {
+				margin-right: 25px;
+			}
+			.sevenths > aside {
+				width: calc(28% - 12.5px);
+			}
+			.sevenths > article {
+				width: calc(72% - 12.5px);
+			}
+			.sevenths > aside + article {
+				margin-left: 25px;
+			}
+			.sevenths > article + aside {
+				margin-right: 25px;
+			}
+			.thirds aside.single {
+				width: calc(17% - 12.5px);
+			}
+			.thirds aside.single + article {
+				width: calc(83% - 12.5px);
+			}
+			.fifths aside.single {
+				width: calc(20% - 12.5px);
+			}
+			.fifths aside.single + article {
+				width: calc(80% - 12.5px);
+			}
+			.sevenths aside.single {
+				width: calc(14% - 12.5px);
+			}
+			.sevenths aside.single + article {
+				width: calc(86% - 12.5px);
+			}
+			aside img {
+				margin-top: 25px;
+				padding: 5px;
+				box-shadow: 0 0 20px rgba(0,0,0,0.3);
+			}
+			hr {
+				border: 1px solid #bfbfbf;
+			}
+			section {
+				margin-bottom: 40px;
+			}
+		</style>
+		<title>My Blog</title>
+	</head>
+	<body>
+		<div id="container">
+			<div class="title">My Blog</div>
+			<section class="sevenths">
+				<aside>
+
+				</aside>
+				<article>
+
+				</article>
+			</section>
+		</div>
+	</body>
+</html>
+"""
+'''
+        snipCheck = "'prefix': 'html-mark'"
+        pat = re.escape(snipCheck)
+        match = re.search(pat, data)
+        print(divider)
+        if match:
+            print("")
+            print("\t- Snippet already set!")
+            print("")
+        else:
+            print("")
+            print("\t- snippet has been added")
+            print("")
+            data += snip
+        FILE.write(data)
+        FILE.close()
+
     #=== Execute ===
     if action == None:
         print("You need to pass in an argument, such as '-a' for 'all'.")
@@ -594,6 +792,7 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
 [ --atom-dep ]          atom dependencies = platformio-ide-terminal, atom-runner, atom-pair
 [ --quizes ]            adds the quizes repo and alias reference
 [ --exec ]              make script executable from command line by simply typing file name
+[ --mark-snippet ]      add the Markdown HTML Wrapper snippet to the atom snippets.cson file
 ''')
     else:
         for param in sys.argv:
@@ -628,6 +827,8 @@ export PATH=/home/chrx/Documents/codeForLift-handle-setup:$PATH
                 handle_executable()
             elif param == '--assignments':
                 handle_assignments()
+            elif param == '--mark-snippet':
+                handle_markdown_html_snippet()
         print(divider)
         print("")
 
